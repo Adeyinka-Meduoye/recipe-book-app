@@ -26,9 +26,6 @@ The Recipe Book App is your go-to companion for all things food. It’s built wi
 ![isMobile](assets/screenshots/isMobile.png)
 ![isTablet](assets/screenshots/isTablet.png)
 
-### 📋 Recipe Detail
-![Recipe Detail](assets/screenshots/recipe_detail.png)
-
 
 ## 🚀 How to Run the Project
 
