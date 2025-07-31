@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:recipe_book_app/utils/constants.dart';
+import 'package:adeyinka_recipe_book_app/utils/constants.dart';
 
 class AppTheme {
   static ThemeData get lightTheme {

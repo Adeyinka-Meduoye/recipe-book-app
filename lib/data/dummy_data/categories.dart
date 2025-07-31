@@ -1,4 +1,4 @@
-import 'package:recipe_book_app/data/models/category.dart';
+import 'package:adeyinka_recipe_book_app/data/models/category.dart';
 
 final List<Category> dummyCategories = [
   Category(id: '1', name: 'Nigerian', imageUrl: 'assets/images/jollof_rice.jpg'),

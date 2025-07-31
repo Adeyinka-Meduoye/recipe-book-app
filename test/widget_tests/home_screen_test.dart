@@ -1,12 +1,13 @@
 // File: test/widget_tests/home_screen_test.dart
+import 'package:adeyinka_recipe_book_app/ui/widgets/category_tile.dart';
+import 'package:adeyinka_recipe_book_app/ui/widgets/recipe_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:recipe_book_app/ui/screens/home_screen.dart';
-import 'package:recipe_book_app/ui/screens/recipe_list_screen.dart';
-import 'package:recipe_book_app/ui/theme/app_theme.dart';
-import 'package:recipe_book_app/ui/widgets/category_tile.dart';
-import 'package:recipe_book_app/ui/widgets/recipe_card.dart';
-import 'package:recipe_book_app/utils/constants.dart';
+import 'package:go_router/go_router.dart';
+import 'package:adeyinka_recipe_book_app/ui/screens/home_screen.dart';
+import 'package:adeyinka_recipe_book_app/ui/screens/recipe_list_screen.dart';
+import 'package:adeyinka_recipe_book_app/ui/theme/app_theme.dart';
+import 'package:adeyinka_recipe_book_app/utils/constants.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
 void main() {
@@ -31,13 +32,23 @@ void main() {
     });
 
     testWidgets('HomeScreen navigates to RecipeListScreen on search', (WidgetTester tester) async {
+      final router = GoRouter(
+        routes: [
+          GoRoute(
+            path: '/home',
+            builder: (context, state) => HomeScreen(onThemeToggle: () {}),
+          ),
+          GoRoute(
+            path: '/recipes',
+            builder: (context, state) => const RecipeListScreen(),
+          ),
+        ],
+      );
+
       await tester.pumpWidget(
-        MaterialApp(
+        MaterialApp.router(
           theme: AppTheme.lightTheme,
-          home: HomeScreen(onThemeToggle: () {}),
-          routes: {
-            '/recipe_list': (context) => const RecipeListScreen(),
-          },
+          routerConfig: router,
         ),
       );
       await tester.pumpAndSettle();

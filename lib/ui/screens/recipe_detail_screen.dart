@@ -1,15 +1,16 @@
+// File: lib/ui/screens/recipe_detail_screen.dart
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:recipe_book_app/data/models/recipe.dart';
-import 'package:recipe_book_app/data/models/shopping_item.dart';
-import 'package:recipe_book_app/data/services/storage_service.dart';
-import 'package:recipe_book_app/utils/constants.dart';
-import 'package:recipe_book_app/utils/helpers.dart';
+import 'package:adeyinka_recipe_book_app/data/dummy_data/recipes.dart';
+import 'package:adeyinka_recipe_book_app/data/models/recipe.dart';
+import 'package:adeyinka_recipe_book_app/data/models/shopping_item.dart';
+import 'package:adeyinka_recipe_book_app/data/services/storage_service.dart';
+import 'package:adeyinka_recipe_book_app/utils/constants.dart';
 
 class RecipeDetailScreen extends StatefulWidget {
-  final Recipe recipe;
+  final String recipeId;
 
-  const RecipeDetailScreen({super.key, required this.recipe});
+  const RecipeDetailScreen({super.key, required this.recipeId});
 
   @override
   State<RecipeDetailScreen> createState() => _RecipeDetailScreenState();
@@ -19,18 +20,20 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
   int _servings = 0;
   bool _isFavorite = false;
   final StorageService _storageService = StorageService();
+  late Recipe recipe;
 
   @override
   void initState() {
     super.initState();
-    _servings = widget.recipe.servings;
+    recipe = dummyRecipes.firstWhere((r) => r.id == widget.recipeId);
+    _servings = recipe.servings;
     _checkFavoriteStatus();
   }
 
   Future<void> _checkFavoriteStatus() async {
     final favorites = await _storageService.getFavorites();
     setState(() {
-      _isFavorite = favorites.contains(widget.recipe.id);
+      _isFavorite = favorites.contains(widget.recipeId);
     });
   }
 
@@ -38,9 +41,9 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
     final favorites = await _storageService.getFavorites();
     setState(() {
       if (_isFavorite) {
-        favorites.remove(widget.recipe.id);
+        favorites.remove(widget.recipeId);
       } else {
-        favorites.add(widget.recipe.id);
+        favorites.add(widget.recipeId);
       }
       _isFavorite = !_isFavorite;
     });
@@ -49,20 +52,25 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
 
   Future<void> _addToShoppingList() async {
     final items = await _storageService.getShoppingList();
-    final newItems = widget.recipe.ingredients.map((ingredient) {
-      final adjustedIngredient = _adjustIngredient(
-        ingredient,
-        widget.recipe.servings,
-      );
+    final newItems = recipe.ingredients.map((ingredient) {
+      final adjustedIngredient = _adjustIngredient(ingredient, recipe.servings);
       final regex = RegExp(r'^(\d*\.?\d+)([a-zA-Z]+)?\s(.+)$');
       final match = regex.firstMatch(adjustedIngredient);
       if (match != null) {
         final quantity = double.parse(match.group(1)!);
         final unit = match.group(2) ?? 'unit';
         final name = match.group(3)!;
-        return ShoppingItem(name: name, quantity: quantity, unit: unit);
+        return ShoppingItem(
+          name: name,
+          quantity: quantity,
+          unit: unit,
+        );
       }
-      return ShoppingItem(name: ingredient, quantity: 1.0, unit: 'unit');
+      return ShoppingItem(
+        name: ingredient,
+        quantity: 1.0,
+        unit: 'unit',
+      );
     }).toList();
 
     // Aggregate quantities for duplicate items
@@ -74,8 +82,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
       if (existingItemIndex != -1) {
         aggregatedItems[existingItemIndex] = ShoppingItem(
           name: newItem.name,
-          quantity:
-              aggregatedItems[existingItemIndex].quantity + newItem.quantity,
+          quantity: aggregatedItems[existingItemIndex].quantity + newItem.quantity,
           unit: newItem.unit,
           isChecked: aggregatedItems[existingItemIndex].isChecked,
         );
@@ -113,15 +120,13 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final isDesktop =
-            constraints.maxWidth >= AppConstants.desktopBreakpoint;
-        final isTablet =
-            constraints.maxWidth >= AppConstants.tabletBreakpoint &&
+        final isDesktop = constraints.maxWidth >= AppConstants.desktopBreakpoint;
+        final isTablet = constraints.maxWidth >= AppConstants.tabletBreakpoint &&
             constraints.maxWidth < AppConstants.desktopBreakpoint;
 
         return Scaffold(
           appBar: AppBar(
-            title: Text(widget.recipe.title),
+            title: Text(recipe.title),
             actions: [
               IconButton(
                 icon: Icon(
@@ -140,67 +145,54 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Image Gallery (using a single image for now, extendable to multiple)
                 CarouselSlider(
                   options: CarouselOptions(
-                    height: isDesktop
-                        ? 400
-                        : isTablet
-                        ? 300
-                        : 200,
+                    height: isDesktop ? 400 : isTablet ? 300 : 200,
                     viewportFraction: 1.0,
                     enableInfiniteScroll: false,
                   ),
                   items: [
                     Image.asset(
-                      widget.recipe.imageUrl,
+                      recipe.imageUrl,
                       width: double.infinity,
                       fit: BoxFit.cover,
                     ),
                   ],
                 ),
-                // Recipe Details
                 Padding(
                   padding: const EdgeInsets.all(AppConstants.defaultPadding),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Title and Metadata
                       Text(
-                        widget.recipe.title,
+                        recipe.title,
                         style: Theme.of(context).textTheme.headlineMedium,
                       ),
                       const SizedBox(height: 8),
-                      // In RecipeDetailScreen build method
                       Text(
-                        '${Helpers.formatDuration(widget.recipe.cookingTime)} | ${widget.recipe.difficulty} | ${Helpers.capitalize(widget.recipe.category)}',
+                        '${recipe.cookingTime} min | ${recipe.difficulty} | ${recipe.category}',
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
-                      if (widget.recipe.dietaryRestrictions.isNotEmpty)
+                      if (recipe.dietaryRestrictions.isNotEmpty)
                         Padding(
                           padding: const EdgeInsets.only(top: 8),
                           child: Wrap(
                             spacing: 8,
-                            children: widget.recipe.dietaryRestrictions
-                                .map(
-                                  (restriction) => Chip(
-                                    label: Text(restriction),
-                                    backgroundColor: Theme.of(
-                                      context,
-                                    ).colorScheme.secondaryContainer,
-                                  ),
-                                )
+                            children: recipe.dietaryRestrictions
+                                .map((restriction) => Chip(
+                                      label: Text(restriction),
+                                      backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+                                    ))
                                 .toList(),
                           ),
                         ),
                       const SizedBox(height: 16),
-                      // Servings Adjuster
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
                             'Servings: $_servings',
-                            style: Theme.of(context).textTheme.bodyLarge,
+                            style: Theme.of(context).textTheme.titleLarge,
                           ),
                           Row(
                             children: [
@@ -227,58 +219,50 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                         ],
                       ),
                       const SizedBox(height: 16),
-                      // Ingredients
                       Text(
                         'Ingredients',
-                        style: Theme.of(context).textTheme.bodyLarge,
+                        style: Theme.of(context).textTheme.titleLarge,
                       ),
                       const SizedBox(height: 8),
-                      ...widget.recipe.ingredients.map((ingredient) {
-                        final adjustedIngredient = _adjustIngredient(
-                          ingredient,
-                          widget.recipe.servings,
-                        );
+                      ...recipe.ingredients.map((ingredient) {
+                        final adjustedIngredient = _adjustIngredient(ingredient, recipe.servings);
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 4.0),
                           child: Text(
                             adjustedIngredient,
-                            style: Theme.of(context).textTheme.bodyMedium,
+                            style: Theme.of(context).textTheme.bodyLarge,
                           ),
                         );
                       }),
                       const SizedBox(height: 16),
-                      // Instructions
                       Text(
                         'Instructions',
-                        style: Theme.of(context).textTheme.bodyLarge,
+                        style: Theme.of(context).textTheme.titleLarge,
                       ),
                       const SizedBox(height: 8),
-                      ...widget.recipe.instructions.asMap().entries.map((
-                        entry,
-                      ) {
+                      ...recipe.instructions.asMap().entries.map((entry) {
                         final index = entry.key + 1;
                         final instruction = entry.value;
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 4.0),
                           child: Text(
                             '$index. $instruction',
-                            style: Theme.of(context).textTheme.bodyMedium,
+                            style: Theme.of(context).textTheme.bodyLarge,
                           ),
                         );
                       }),
                       const SizedBox(height: 16),
-                      // Nutrition Facts
                       Text(
                         'Nutrition Facts (per serving)',
-                        style: Theme.of(context).textTheme.bodyLarge,
+                        style: Theme.of(context).textTheme.titleLarge,
                       ),
                       const SizedBox(height: 8),
-                      ...widget.recipe.nutrition.entries.map((entry) {
+                      ...recipe.nutrition.entries.map((entry) {
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 4.0),
                           child: Text(
                             '${entry.key}: ${entry.value}',
-                            style: Theme.of(context).textTheme.bodyMedium,
+                            style: Theme.of(context).textTheme.bodyLarge,
                           ),
                         );
                       }),

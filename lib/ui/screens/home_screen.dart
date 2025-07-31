@@ -1,20 +1,16 @@
+// File: lib/ui/screens/home_screen.dart
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:recipe_book_app/data/dummy_data/categories.dart';
-import 'package:recipe_book_app/data/dummy_data/recipes.dart';
-import 'package:recipe_book_app/ui/screens/favorites_screen.dart';
-import 'package:recipe_book_app/ui/screens/profile_screen.dart';
-import 'package:recipe_book_app/ui/screens/recipe_detail_screen.dart';
-import 'package:recipe_book_app/ui/screens/recipe_list_screen.dart';
-import 'package:recipe_book_app/ui/screens/shopping_list_screen.dart';
-import 'package:recipe_book_app/ui/widgets/category_tile.dart';
-import 'package:recipe_book_app/ui/widgets/recipe_card.dart';
-import 'package:recipe_book_app/ui/widgets/search_bar.dart' as custom_widgets;
-import 'package:recipe_book_app/utils/constants.dart';
-import 'package:recipe_book_app/utils/helpers.dart';
+import 'package:adeyinka_recipe_book_app/data/dummy_data/categories.dart';
+import 'package:adeyinka_recipe_book_app/data/dummy_data/recipes.dart';
+import 'package:adeyinka_recipe_book_app/ui/widgets/category_tile.dart';
+import 'package:adeyinka_recipe_book_app/ui/widgets/recipe_card.dart';
+import 'package:adeyinka_recipe_book_app/ui/widgets/search_bar.dart'as custom_widgets;
+import 'package:adeyinka_recipe_book_app/utils/constants.dart';
 
 class HomeScreen extends StatefulWidget {
-  final VoidCallback onThemeToggle; // Add callback for theme toggle
+  final VoidCallback onThemeToggle;
 
   const HomeScreen({super.key, required this.onThemeToggle});
 
@@ -25,18 +21,12 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   String _searchQuery = '';
 
-  // In _updateSearchQuery
   void _updateSearchQuery(String query) {
     setState(() {
       _searchQuery = query;
     });
-    if (Helpers.isValidSearchQuery(query)) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => RecipeListScreen(initialSearchQuery: query),
-        ),
-      );
+    if (query.isNotEmpty) {
+      context.go('/recipes?query=$query');
     }
   }
 
@@ -80,6 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         selected: true,
                         onTap: () {
                           Navigator.pop(context);
+                          context.go('/home');
                         },
                       ),
                       ListTile(
@@ -87,12 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         leading: const Icon(Icons.favorite),
                         onTap: () {
                           Navigator.pop(context);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const FavoritesScreen(),
-                            ),
-                          );
+                          context.go('/favorites');
                         },
                       ),
                       ListTile(
@@ -100,12 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         leading: const Icon(Icons.person),
                         onTap: () {
                           Navigator.pop(context);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const ProfileScreen(),
-                            ),
-                          );
+                          context.go('/profile');
                         },
                       ),
                       ListTile(
@@ -113,12 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         leading: const Icon(Icons.list),
                         onTap: () {
                           Navigator.pop(context);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const ShoppingListScreen(),
-                            ),
-                          );
+                          context.go('/shopping');
                         },
                       ),
                       ListTile(
@@ -130,8 +106,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         onTap: () {
                           Navigator.pop(context);
-                          widget
-                              .onThemeToggle(); // Use callback to toggle theme
+                          widget.onThemeToggle();
                         },
                       ),
                     ],
@@ -163,38 +138,43 @@ class _HomeScreenState extends State<HomeScreen> {
                   items: dummyRecipes.map((recipe) {
                     return Builder(
                       builder: (BuildContext context) {
-                        return Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 5.0),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(
-                              AppConstants.cardBorderRadius,
-                            ),
-                            image: DecorationImage(
-                              image: AssetImage(recipe.imageUrl),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          child: Align(
-                            alignment: Alignment.bottomLeft,
-                            child: Padding(
-                              padding: const EdgeInsets.all(
-                                AppConstants.defaultPadding,
+                        return GestureDetector(
+                          onTap: () {
+                            context.go('/recipe/${recipe.id}');
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 5.0),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(
+                                AppConstants.cardBorderRadius,
                               ),
-                              child: Text(
-                                recipe.title,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleLarge
-                                    ?.copyWith(
-                                      color: Colors.white,
-                                      shadows: const [
-                                        Shadow(
-                                          blurRadius: 10.0,
-                                          color: Colors.black,
-                                          offset: Offset(2.0, 2.0),
-                                        ),
-                                      ],
-                                    ),
+                              image: DecorationImage(
+                                image: AssetImage(recipe.imageUrl),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            child: Align(
+                              alignment: Alignment.bottomLeft,
+                              child: Padding(
+                                padding: const EdgeInsets.all(
+                                  AppConstants.defaultPadding,
+                                ),
+                                child: Text(
+                                  recipe.title,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineMedium
+                                      ?.copyWith(
+                                        color: Colors.white,
+                                        shadows: const [
+                                          Shadow(
+                                            blurRadius: 10.0,
+                                            color: Colors.black,
+                                            offset: Offset(2.0, 2.0),
+                                          ),
+                                        ],
+                                      ),
+                                ),
                               ),
                             ),
                           ),
@@ -235,14 +215,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: CategoryTile(
                             category: category,
                             onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => RecipeListScreen(
-                                    initialCategory: category.name,
-                                  ),
-                                ),
-                              );
+                              context.go('/recipes?category=${category.name}');
                             },
                           ),
                         );
@@ -273,19 +246,13 @@ class _HomeScreenState extends State<HomeScreen> {
                               ? constraints.maxWidth / 4 -
                                     AppConstants.defaultPadding
                               : isTablet
-                              ? constraints.maxWidth / 4 -
+                              ? constraints.maxWidth / 2 -
                                     AppConstants.defaultPadding
                               : constraints.maxWidth,
                           child: RecipeCard(
                             recipe: recipe,
                             onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      RecipeDetailScreen(recipe: recipe),
-                                ),
-                              );
+                              context.go('/recipe/${recipe.id}');
                             },
                           ),
                         );
@@ -293,6 +260,18 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ),
+                SizedBox(
+                  height: AppConstants.defaultPadding,
+                ),
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(AppConstants.defaultPadding),
+                    child: Text(
+                      'Developed by ${AppConstants.developerName}',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ),
+                )
               ],
             ),
           ),

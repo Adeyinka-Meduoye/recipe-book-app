@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:recipe_book_app/utils/constants.dart';
+import 'package:adeyinka_recipe_book_app/utils/constants.dart';
 
 class SearchBar extends StatefulWidget {
-  final Function(String) onSearch;
+  final void Function(String) onSearch;
   final String initialQuery;
 
   const SearchBar({

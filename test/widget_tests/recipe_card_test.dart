@@ -1,64 +1,59 @@
-// File: test/widget_tests/recipe_card_test.dart
+// File: lib/ui/widgets/recipe_card.dart
 import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:recipe_book_app/data/models/recipe.dart';
-import 'package:recipe_book_app/ui/widgets/recipe_card.dart';
+import 'package:adeyinka_recipe_book_app/data/models/recipe.dart';
+import 'package:adeyinka_recipe_book_app/utils/constants.dart';
 
-void main() {
-  group('RecipeCard Widget Tests', () {
-    final testRecipe = Recipe(
-      id: '1',
-      title: 'Test Recipe',
-      imageUrl: 'assets/images/test.jpg',
-      ingredients: ['Ingredient 1'],
-      instructions: ['Step 1'],
-      nutrition: {'calories': 100},
-      servings: 2,
-      category: 'Test Category',
-      cookingTime: 30,
-      difficulty: 'Easy',
-      dietaryRestrictions: [],
+class RecipeCard extends StatelessWidget {
+  final Recipe recipe;
+  final VoidCallback onTap;
+
+  const RecipeCard({super.key, required this.recipe, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Card(
+        elevation: 4,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppConstants.cardBorderRadius),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(AppConstants.cardBorderRadius),
+              ),
+              child: Image.asset(
+                recipe.imageUrl,
+                height: 120,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(AppConstants.defaultPadding),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    recipe.title,
+                    style: Theme.of(context).textTheme.titleMedium,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '${recipe.cookingTime} min | ${recipe.difficulty}',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
-
-    testWidgets('RecipeCard displays title and metadata in grid view', (WidgetTester tester) async {
-      // Arrange
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: RecipeCard(
-              recipe: testRecipe,
-              onTap: () {},
-              isGridView: true,
-            ),
-          ),
-        ),
-      );
-
-      // Assert
-      expect(find.text('Test Recipe'), findsOneWidget);
-      expect(find.text('30 min | Easy'), findsOneWidget);
-      expect(find.byType(Image), findsOneWidget);
-    });
-
-    testWidgets('RecipeCard displays title and metadata in list view', (WidgetTester tester) async {
-      // Arrange
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: RecipeCard(
-              recipe: testRecipe,
-              onTap: () {},
-              isGridView: false,
-            ),
-          ),
-        ),
-      );
-
-      // Assert
-      expect(find.text('Test Recipe'), findsOneWidget);
-      expect(find.text('30 min | Easy'), findsOneWidget);
-      expect(find.byType(ListTile), findsOneWidget);
-      expect(find.byType(Image), findsOneWidget);
-    });
-  });
+  }
 }

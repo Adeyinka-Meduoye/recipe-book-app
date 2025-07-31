@@ -8,7 +8,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:recipe_book_app/main.dart';
+import 'package:adeyinka_recipe_book_app/main.dart';
 // Ensure that main.dart contains a class named MyApp, e.g.:
 // class MyApp extends StatelessWidget { ... }
 

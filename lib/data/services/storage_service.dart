@@ -1,12 +1,23 @@
-import 'dart:convert';
+// File: lib/data/services/storage_service.dart
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:recipe_book_app/data/models/shopping_item.dart';
+import 'package:adeyinka_recipe_book_app/data/models/shopping_item.dart';
+import 'dart:convert';
 
 class StorageService {
+  static const String _themeKey = 'isDarkMode';
   static const String _favoritesKey = 'favorites';
-  static const String _userPrefsKey = 'userPrefs';
   static const String _shoppingListKey = 'shoppingList';
-  static const String _themeKey = 'theme';
+  static const String _userPrefsKey = 'userPrefs';
+
+  Future<bool> getThemePreference() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_themeKey) ?? false;
+  }
+
+  Future<void> saveThemePreference(bool isDarkMode) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_themeKey, isDarkMode);
+  }
 
   Future<List<String>> getFavorites() async {
     final prefs = await SharedPreferences.getInstance();
@@ -18,43 +29,37 @@ class StorageService {
     await prefs.setStringList(_favoritesKey, favorites);
   }
 
-  Future<Map<String, dynamic>> getUserPrefs() async {
-    final prefs = await SharedPreferences.getInstance();
-    final userPrefsString = prefs.getString(_userPrefsKey);
-    if (userPrefsString != null) {
-      return jsonDecode(userPrefsString) as Map<String, dynamic>;
-    }
-    return {};
-  }
-
-  Future<void> saveUserPrefs(Map<String, dynamic> userPrefs) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_userPrefsKey, jsonEncode(userPrefs));
-  }
-
   Future<List<ShoppingItem>> getShoppingList() async {
     final prefs = await SharedPreferences.getInstance();
-    final shoppingListString = prefs.getString(_shoppingListKey);
-    if (shoppingListString != null) {
-      final List<dynamic> jsonList = jsonDecode(shoppingListString);
-      return jsonList.map((json) => ShoppingItem.fromJson(json)).toList();
-    }
-    return [];
+    final shoppingList = prefs.getStringList(_shoppingListKey) ?? [];
+    return shoppingList.map((item) {
+      final parts = item.split('|');
+      return ShoppingItem(
+        name: parts[0],
+        quantity: double.parse(parts[1]),
+        unit: parts[2],
+        isChecked: parts[3] == 'true',
+      );
+    }).toList();
   }
 
   Future<void> saveShoppingList(List<ShoppingItem> items) async {
     final prefs = await SharedPreferences.getInstance();
-    final jsonList = items.map((item) => item.toJson()).toList();
-    await prefs.setString(_shoppingListKey, jsonEncode(jsonList));
+    final shoppingList = items.map((item) {
+      return '${item.name}|${item.quantity}|${item.unit}|${item.isChecked}';
+    }).toList();
+    await prefs.setStringList(_shoppingListKey, shoppingList);
   }
 
-  Future<bool> getThemePreference() async {
+  Future<Map<String, String>> getUserPrefs() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_themeKey) ?? false; // Default to light theme
+    final userPrefsJson = prefs.getString(_userPrefsKey) ?? '{}';
+    final Map<String, dynamic> userPrefs = jsonDecode(userPrefsJson);
+    return userPrefs.map((key, value) => MapEntry(key, value.toString()));
   }
 
-  Future<void> saveThemePreference(bool isDarkMode) async {
+  Future<void> saveUserPrefs(Map<String, String> userPrefs) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_themeKey, isDarkMode);
+    await prefs.setString(_userPrefsKey, jsonEncode(userPrefs));
   }
 }

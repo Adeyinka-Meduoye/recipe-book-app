@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:recipe_book_app/data/models/recipe.dart';
-import 'package:recipe_book_app/utils/constants.dart';
+import 'package:adeyinka_recipe_book_app/data/models/recipe.dart';
+import 'package:adeyinka_recipe_book_app/utils/constants.dart';
 
 class RecipeCard extends StatelessWidget {
   final Recipe recipe;

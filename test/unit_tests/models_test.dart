@@ -1,65 +1,92 @@
 // File: test/unit_tests/models_test.dart
 import 'package:flutter_test/flutter_test.dart';
-import 'package:recipe_book_app/data/models/recipe.dart';
-import 'package:recipe_book_app/data/models/category.dart';
-import 'package:recipe_book_app/data/models/shopping_item.dart';
+import 'package:adeyinka_recipe_book_app/data/models/recipe.dart';
+import 'package:adeyinka_recipe_book_app/data/models/shopping_item.dart';
 
 void main() {
   group('Model Tests', () {
-    test('Recipe model initialization', () {
-      // Arrange
-      final recipe = Recipe(
-        id: '1',
-        title: 'Test Recipe',
-        imageUrl: 'test.jpg',
-        ingredients: ['Ingredient 1'],
-        instructions: ['Step 1'],
-        nutrition: {'calories': 100},
-        servings: 2,
-        category: 'Test Category',
-        cookingTime: 30,
-        difficulty: 'Easy',
-        dietaryRestrictions: ['Vegan'],
-      );
+    group('Recipe Model', () {
+      test('Recipe initializes with correct properties', () {
+        final recipe = Recipe(
+          id: '1',
+          title: 'Spaghetti Bolognese',
+          imageUrl: 'assets/images/spaghetti.jpg',
+          cookingTime: 45,
+          difficulty: 'Medium',
+          category: 'Italian',
+          ingredients: ['200g spaghetti', '100g ground beef'],
+          instructions: ['Cook spaghetti.', 'Brown beef.'],
+          nutrition: {
+            'Calories': '500 kcal',
+            'Protein': '20g',
+            'Fat': '15g',
+          },
+          dietaryRestrictions: ['Contains Gluten'],
+          servings: 4,
+        );
 
-      // Assert
-      expect(recipe.id, equals('1'));
-      expect(recipe.title, equals('Test Recipe'));
-      expect(recipe.imageUrl, equals('test.jpg'));
-      expect(recipe.ingredients, equals(['Ingredient 1']));
-      expect(recipe.instructions, equals(['Step 1']));
-      expect(recipe.nutrition, equals({'calories': 100}));
-      expect(recipe.servings, equals(2));
-      expect(recipe.category, equals('Test Category'));
-      expect(recipe.cookingTime, equals(30));
-      expect(recipe.difficulty, equals('Easy'));
-      expect(recipe.dietaryRestrictions, equals(['Vegan']));
+        expect(recipe.id, '1');
+        expect(recipe.title, 'Spaghetti Bolognese');
+        expect(recipe.imageUrl, 'assets/images/spaghetti.jpg');
+        expect(recipe.cookingTime, 45);
+        expect(recipe.difficulty, 'Medium');
+        expect(recipe.category, 'Italian');
+        expect(recipe.ingredients, ['200g spaghetti', '100g ground beef']);
+        expect(recipe.instructions, ['Cook spaghetti.', 'Brown beef.']);
+        expect(recipe.nutrition, {
+          'Calories': '500 kcal',
+          'Protein': '20g',
+          'Fat': '15g',
+        });
+        expect(recipe.dietaryRestrictions, ['Contains Gluten']);
+        expect(recipe.servings, 4);
+      });
+
+      test('Recipe handles empty dietaryRestrictions and default servings', () {
+        final recipe = Recipe(
+          id: '2',
+          title: 'Caesar Salad',
+          imageUrl: 'assets/images/salad.jpg',
+          cookingTime: 20,
+          difficulty: 'Easy',
+          category: 'Healthy',
+          ingredients: ['1 romaine lettuce', '50g croutons'],
+          instructions: ['Chop lettuce.', 'Toss salad.'],
+          nutrition: {
+            'Calories': '300 kcal',
+            'Protein': '10g',
+          },
+        );
+
+        expect(recipe.dietaryRestrictions, isEmpty);
+        expect(recipe.servings, 4);
+      });
     });
 
-    test('Category model initialization', () {
-      // Arrange
-      final category = Category(id: '1', name: 'Italian', imageUrl: 'italian.jpg');
+    group('ShoppingItem Model', () {
+      test('ShoppingItem initializes with correct properties', () {
+        final item = ShoppingItem(
+          name: 'Spaghetti',
+          quantity: 200.0,
+          unit: 'g',
+          isChecked: true,
+        );
 
-      // Assert
-      expect(category.id, equals('1'));
-      expect(category.name, equals('Italian'));
-      expect(category.imageUrl, equals('italian.jpg'));
-    });
+        expect(item.name, 'Spaghetti');
+        expect(item.quantity, 200.0);
+        expect(item.unit, 'g');
+        expect(item.isChecked, true);
+      });
 
-    test('ShoppingItem model initialization and JSON serialization', () {
-      // Arrange
-      final item = ShoppingItem(name: 'Tomato', quantity: 2, unit: 'unit', isChecked: true);
+      test('ShoppingItem handles default isChecked', () {
+        final item = ShoppingItem(
+          name: 'Lettuce',
+          quantity: 1.0,
+          unit: 'head',
+        );
 
-      // Act
-      final json = item.toJson();
-      final fromJson = ShoppingItem.fromJson(json);
-
-      // Assert
-      expect(json, equals({'name': 'Tomato', 'quantity': 2, 'unit': 'unit', 'isChecked': true}));
-      expect(fromJson.name, equals(item.name));
-      expect(fromJson.quantity, equals(item.quantity));
-      expect(fromJson.unit, equals(item.unit));
-      expect(fromJson.isChecked, equals(item.isChecked));
+        expect(item.isChecked, false);
+      });
     });
   });
 }

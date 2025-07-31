@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:recipe_book_app/data/models/category.dart';
-import 'package:recipe_book_app/utils/constants.dart';
+import 'package:adeyinka_recipe_book_app/data/models/category.dart';
+import 'package:adeyinka_recipe_book_app/utils/constants.dart';
 
 class CategoryTile extends StatelessWidget {
   final Category category;

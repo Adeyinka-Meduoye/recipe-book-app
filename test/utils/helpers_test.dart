@@ -1,6 +1,6 @@
 // File: test/utils/helpers_test.dart
 import 'package:flutter_test/flutter_test.dart';
-import 'package:recipe_book_app/utils/helpers.dart';
+import 'package:adeyinka_recipe_book_app/utils/helpers.dart';
 
 void main() {
   group('Helpers Tests', () {
