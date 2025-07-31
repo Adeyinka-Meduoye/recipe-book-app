@@ -1,4 +1,3 @@
-// File: lib/ui/screens/recipe_detail_screen.dart
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:adeyinka_recipe_book_app/data/dummy_data/recipes.dart';

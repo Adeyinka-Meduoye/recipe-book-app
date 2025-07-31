@@ -1,4 +1,3 @@
-// File: lib/ui/widgets/recipe_card.dart
 import 'package:flutter/material.dart';
 import 'package:adeyinka_recipe_book_app/data/models/recipe.dart';
 import 'package:adeyinka_recipe_book_app/utils/constants.dart';

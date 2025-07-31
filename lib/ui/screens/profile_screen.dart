@@ -1,4 +1,3 @@
-// File: lib/ui/screens/profile_screen.dart
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:adeyinka_recipe_book_app/data/dummy_data/recipes.dart';

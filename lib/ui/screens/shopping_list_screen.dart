@@ -1,4 +1,3 @@
-// File: lib/ui/screens/shopping_list_screen.dart
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:adeyinka_recipe_book_app/data/models/shopping_item.dart';

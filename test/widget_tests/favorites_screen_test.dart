@@ -1,4 +1,3 @@
-// File: test/widget_tests/favorites_screen_test.dart
 import 'package:adeyinka_recipe_book_app/ui/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

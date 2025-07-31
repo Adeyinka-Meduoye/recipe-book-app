@@ -1,4 +1,3 @@
-// File: test/widget_tests/home_screen_test.dart
 import 'package:adeyinka_recipe_book_app/ui/widgets/category_tile.dart';
 import 'package:adeyinka_recipe_book_app/ui/widgets/recipe_card.dart';
 import 'package:flutter/material.dart';

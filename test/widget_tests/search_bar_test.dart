@@ -1,4 +1,3 @@
-// File: test/widget_tests/search_bar_test.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:adeyinka_recipe_book_app/ui/widgets/search_bar.dart' as custom;
